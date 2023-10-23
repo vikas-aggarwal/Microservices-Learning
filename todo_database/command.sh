@@ -1,0 +1,1 @@
+podman run --rm --user 0 --name gremlin -v ./conf:/opt/gremlin-server/conf/ -v ./load-db.groovy:/opt/gremlin-server/scripts/load-db.groovy -v ./todos.json:/opt/gremlin-server/data/todos.json -p 8182:8182 docker.io/tinkerpop/gremlin-server:3.6.4
