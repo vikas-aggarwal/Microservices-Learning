@@ -14,9 +14,9 @@ spring:
     oauth2:
       authorizationserver:
         client:
-          messaging-client:
+          ui-client:
             registration:
-              client-id: "messaging-client"
+              client-id: "ui-client"
               client-secret: "{noop}secret123456"
               client-authentication-methods:
                 - "client_secret_basic"

@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  traefik:
+    image: traefik:latest
+    command: --api.insecure=true
+    ports:
+      # The HTTP port
+      - "8080:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8081:8080"
+    volumes:
+      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
+
+  auth_server:
+    image: custom_auth_server:latest
+
+  database:
+    volumes:
+      - ./todo_database/conf:/opt/gremlin-server/conf/ 
+      - ./todo_database/load-db.groovy:/opt/gremlin-server/scripts/load-db.groovy 
+      - ./todo_database/todos.json:/opt/gremlin-server/data/todos.json
+    image: docker.io/tinkerpop/gremlin-server:3.6.4
+
+  todo_service:
+    image: custom_todo_service:latest
+    ports:
+      - 9010:8081
+    environment:
+      - DATABASE_HOST=database
+      - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JTW_ISSUER-URI=http://auth_server:8080
+
+  ui:
+    image: custom_ui:latest 
+    ports:
+      - 3000:3000
+    environment:
+      - ISSUER_BASE_URL=http://auth_server:8080/
+      - CLIENT_ID=ui-client
+      - BASE_URL=http://localhost:3000/
+      - SECRET=secret123456
+      - CLIENT_SECRET=secret123456
+
+    
